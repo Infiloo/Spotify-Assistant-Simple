@@ -72,7 +72,11 @@
 
         function openSpotifyApp(songTitle) {
             const searchQuery = encodeURIComponent(songTitle);
-            window.location.href = `spotify:search:${searchQuery}`;
+            const appLink = `spotify:search:${searchQuery}`;
+
+            // Versucht, die Spotify-App direkt zu öffnen
+            window.location.href = appLink;
+
             document.getElementById("status").innerText = `Öffne Spotify für: ${songTitle}`;
         }
     </script>
