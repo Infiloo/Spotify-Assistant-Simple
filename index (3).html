@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1, p, h2 {
+            margin: 10px;
+        }
+
+        textarea {
+            width: 80%;
+            max-width: 400px;
+            height: 50px;
+            font-size: 1.2em;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spotify Assistant</h1>
+    <p id="status">Warte auf den Befehl „Spotify spiele [Titel]“...</p>
+
+    <h2>Erkanntes Lied:</h2>
+    <textarea id="songTitle" placeholder="Erkannter Titel..." readonly></textarea>
+
+    <script>
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "de-DE";
+        recognition.continuous = true;
+        recognition.interimResults = false;
+
+        recognition.onresult = function(event) {
+            const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            document.getElementById("status").innerText = "Befehl erkannt: " + command;
+
+            if (command.includes("spotify spiele")) {
+                let songTitle = command.replace("spotify spiele", "").trim();
+                if (songTitle) {
+                    document.getElementById("songTitle").value = songTitle;
+                    openSpotifyApp(songTitle);
+                }
+            }
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById("status").innerText = "Fehler: " + event.error;
+        };
+
+        recognition.onend = function() {
+            recognition.start();
+        };
+
+        recognition.start();
+
+        function openSpotifyApp(songTitle) {
+            const searchQuery = encodeURIComponent(songTitle);
+            window.location.href = `spotify:search:${searchQuery}`;
+            document.getElementById("status").innerText = `Öffne Spotify für: ${songTitle}`;
+        }
+    </script>
+</body>
+</html>
